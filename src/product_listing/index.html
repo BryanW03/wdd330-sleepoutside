@@ -3,18 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sleep Outside | Home</title>
-    <link rel="stylesheet" href="/css/style.css" />
+    <title>Sleep Outside | Product Listing</title>
+    <link rel="stylesheet" href="../css/style.css" />
   </head>
 
   <body>
     <header class="divider">
       <div class="logo">
-        <img src="/images/noun_Tent_2517.svg" alt="tent image for logo" />
-        <a href="index.html"> Sleep<span class="highlight">Outside</span></a>
+        <img src="../images/noun_Tent_2517.svg" alt="tent image for logo" />
+        <a href="../index.html"> Sleep<span class="highlight">Outside</span></a>
       </div>
       <div class="cart">
-        <a href="cart/index.html">
+        <a href="../cart/index.html">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
             <path
               d="M18.9 32.6c1.1 2.4 2.5 3.3 5.4 3.3 1.6 0 3.6-0.3 5.9-0.6 3.2-0.5 6.9-1 11.2-1 2.1 0 4.3 0.1 6.4 0.3 2.1 0.1 4.2 0.3 6.1 0.3 3.2 0 5.2-0.4 5.9-1.2 2.7-2.7 2.8-8.8 2.9-14.6 0.1-6.7 0.2-14.5 4.6-18.7 -0.5 0-1 0-1.6 0 -14.2 0-37.5 0-41.1 0C15.6 6.2 14.9 23.6 18.9 32.6z"
@@ -38,59 +38,19 @@
         </a>
       </div>
     </header>
-    
+
     <main class="divider">
-      <div class="hero">
-        <img
-          src="/images/banner-sm.jpg"
-          srcset="images/banner-sm.jpg 500w, images/banner.jpg"
-          alt="image of a high mountain lake"
-        />
-        <div class="logo logo--square">
-          <img src="/images/noun_Tent_2517.svg" alt="tent image for logo" />
-          <div>Sleep<span class="highlight">Outside</span></div>
-        </div>
-        <div class="mission">
-          <p>
-            Our mission is to provide you with everything you need to sleep
-            outside comfortably at an affordable price.
-          </p>
-        </div>
-      </div>
-
-      <section class="category-search">
-        <h2>Top Categories</h2>
-        <div class="category-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px;">
-          
-          <a href="product_listing/index.html?category=tents" class="category-card" style="text-decoration: none; text-align: center; color: black;">
-            <img src="images/tents.svg" alt="Tents" style="width: 80px; height: 80px;">
-            <h3>Tents</h3>
-          </a>
-
-          <a href="product_listing/index.html?category=backpacks" class="category-card" style="text-decoration: none; text-align: center; color: black;">
-            <img src="images/backpacks.svg" alt="Backpacks" style="width: 80px; height: 80px;">
-            <h3>Backpacks</h3>
-          </a>
-
-          <a href="product_listing/index.html?category=sleeping-bags" class="category-card" style="text-decoration: none; text-align: center; color: black;">
-            <img src="images/sleeping-bags.svg" alt="Sleeping Bags" style="width: 80px; height: 80px;">
-            <h3>Sleeping Bags</h3>
-          </a>
-
-          <a href="product_listing/index.html?category=hammocks" class="category-card" style="text-decoration: none; text-align: center; color: black;">
-            <img src="images/hammocks.svg" alt="Hammocks" style="width: 80px; height: 80px;">
-            <h3>Hammocks</h3>
-          </a>
-
-        </div>
+      <section class="products">
+        <h2>Top Products</h2>
+        <ul class="product-list"></ul>
       </section>
     </main>
-    
+
     <footer>
       &copy;2026 ⛺ SleepOutside ⛺ WDD 330 ⛺ BYU-Idaho for BYU-Pathway
       Worldwide Online
     </footer>
 
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="../js/product-listing.js"></script>
   </body>
 </html>

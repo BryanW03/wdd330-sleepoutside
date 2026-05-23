@@ -1,28 +1,26 @@
-function productCardTemplate(product) {
-  return `<li class="product-card">
-    <a href="product_pages/index.html?product=${product.Id}">
-      <img src="${product.Image}" alt="Image of ${product.Name}">
-      <h3 class="card__brand">${product.Brand.Name}</h3>
-      <h2 class="card__name">${product.NameWithoutBrand}</h2>
-      <p class="product-card__price">$${product.ListPrice}</p>
-    </a>
-  </li>`;
+const baseURL = import.meta.env.VITE_SERVER_URL;
+
+function convertToJson(res) {
+  if (res.ok) {
+    return res.json();
+  } else {
+    throw new Error('Bad Response');
+  }
 }
 
-export default class ProductList {
-  constructor(category, dataSource, listElement) {
-    this.category = category;
-    this.dataSource = dataSource;
-    this.listElement = listElement;
+export default class ProductData {
+  constructor() {
   }
 
-  async init() {
-    const list = await this.dataSource.getData();
-    this.renderList(list);
+  async getData(category) {
+    const response = await fetch(`${baseURL}products/search/${category}`);
+    const data = await convertToJson(response);
+    return data.Result;
   }
 
-  renderList(list) {
-    const htmlStrings = list.map(productCardTemplate);
-    this.listElement.insertAdjacentHTML('afterbegin', htmlStrings.join(''));
+  async findProductById(id) {
+    const response = await fetch(`${baseURL}product/${id}`);
+    const data = await convertToJson(response);
+    return data.Result;
   }
 }

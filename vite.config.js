@@ -12,6 +12,8 @@ export default defineConfig({
         cart: resolve(__dirname, 'src/cart/index.html'),
         checkout: resolve(__dirname, 'src/checkout/index.html'),
         product: resolve(__dirname, 'src/product_pages/index.html'),
+        // Punto completado: Agregamos la nueva página de listados para Vite
+        product_listing: resolve(__dirname, 'src/product_listing/index.html'),
       },
     },
   },
