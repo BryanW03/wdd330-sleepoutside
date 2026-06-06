@@ -5,13 +5,13 @@ export default class ProductDetail {
     this.productId = productId;
     this.product = {};
     this.dataSource = dataSource;
+    this.selectedColor = null;
   }
 
   async init() {
     this.product = await this.dataSource.findProductById(this.productId);
     if (!this.product) {
-      document.querySelector('.product-detail').innerHTML =
-        '<p class="error-msg">Product not found.</p>';
+      document.querySelector('.product-detail').innerHTML = '<p>Product not found.</p>';
       return;
     }
     this._updateBreadcrumb();
@@ -21,13 +21,15 @@ export default class ProductDetail {
 
   _updateBreadcrumb() {
     const bc = document.querySelector('.breadcrumb');
-    if (!bc || !this.product) return;
+    if (!bc) return;
     const category = new URLSearchParams(window.location.search).get('category') || 'tents';
     const catLabel = category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ');
     bc.innerHTML = `
-      <a href="/index.html">Home</a> &rsaquo;
-      <a href="/index.html?category=${category}">${catLabel}</a> &rsaquo;
-      <span>${this.product.Name}</span>
+      <li><a href="/index.html">Home</a></li>
+      <li><span>›</span></li>
+      <li><a href="/index.html?category=${category}">${catLabel}</a></li>
+      <li><span>›</span></li>
+      <li><span>${this.product.Name}</span></li>
     `;
   }
 
@@ -35,30 +37,72 @@ export default class ProductDetail {
     let cartItems = getLocalStorage('so-cart');
     if (!Array.isArray(cartItems)) cartItems = [];
 
-    const existingIndex = cartItems.findIndex(item => item.Id === this.product.Id);
+    const existingIndex = cartItems.findIndex(i => i.Id === this.product.Id);
     if (existingIndex >= 0) {
       cartItems[existingIndex].qty = (cartItems[existingIndex].qty || 1) + 1;
     } else {
-      cartItems.push({ ...this.product, qty: 1 });
+      cartItems.push({ ...this.product, qty: 1, selectedColor: this.selectedColor });
     }
 
     setLocalStorage('so-cart', cartItems);
     showAlert(`"${this.product.Name}" added to cart!`, 'success', 3000);
-    this._showButtonFeedback();
+    this._btnFeedback();
   }
 
-  _showButtonFeedback() {
+  toggleWishlist() {
+    let wishlist = getLocalStorage('so-wishlist') || [];
+    const idx = wishlist.findIndex(i => i.Id === this.product.Id);
+    const btn = document.getElementById('wishlistBtn');
+    if (idx >= 0) {
+      wishlist.splice(idx, 1);
+      if (btn) btn.textContent = '♡ Save to Wishlist';
+      showAlert('Removed from wishlist.', 'info', 2000);
+    } else {
+      wishlist.push(this.product);
+      if (btn) btn.textContent = '♥ Saved!';
+      showAlert('Added to wishlist!', 'success', 2000);
+    }
+    setLocalStorage('so-wishlist', wishlist);
+  }
+
+  _btnFeedback() {
     const btn = document.getElementById('addToCart');
     if (!btn) return;
-    const original = btn.textContent;
+    const orig = btn.textContent;
     btn.textContent = '✓ Added!';
-    btn.style.backgroundColor = '#3a7d44';
     btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.style.backgroundColor = '';
-      btn.disabled = false;
-    }, 1500);
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 1500);
+  }
+
+  _loadComments() {
+    const key = `so-comments-${this.product.Id}`;
+    return getLocalStorage(key) || [];
+  }
+
+  _saveComment(text, author) {
+    const key = `so-comments-${this.product.Id}`;
+    const comments = this._loadComments();
+    comments.push({ text, author: author || 'Anonymous', date: new Date().toLocaleDateString() });
+    setLocalStorage(key, comments);
+  }
+
+  _renderComments(container) {
+    const comments = this._loadComments();
+    const list = container.querySelector('.comments__list');
+    if (!list) return;
+    if (!comments.length) {
+      list.innerHTML = '<p class="comments__empty">No comments yet. Be the first!</p>';
+      return;
+    }
+    list.innerHTML = comments.map(c => `
+      <div class="comment">
+        <div class="comment__header">
+          <span class="comment__author">${c.author}</span>
+          <span class="comment__date">${c.date}</span>
+        </div>
+        <p class="comment__text">${c.text}</p>
+      </div>
+    `).join('');
   }
 
   renderProductDetails(selector) {
@@ -70,31 +114,100 @@ export default class ProductDetail {
     const discountPct = isSale
       ? Math.round(((this.product.SuggestedRetailPrice - this.product.FinalPrice) / this.product.SuggestedRetailPrice) * 100)
       : 0;
-    const colorName = this.product.Colors && this.product.Colors[0]
-      ? this.product.Colors[0].ColorName : '';
+
+    // Color swatches
+    const colors = this.product.Colors || [];
+    const colorSwatches = colors.length > 1
+      ? `<div class="product-colors">
+           <p class="product-colors__label">Color:</p>
+           <div class="product-colors__swatches">
+             ${colors.map((c, i) => `
+               <button
+                 class="color-swatch${i === 0 ? ' active' : ''}"
+                 data-color="${c.ColorName}"
+                 title="${c.ColorName}"
+                 style="background: ${c.ColorCode || '#ccc'}"
+               >${c.ColorName.charAt(0)}</button>
+             `).join('')}
+           </div>
+           <p class="product-colors__selected">${colors[0].ColorName}</p>
+         </div>`
+      : colors[0] ? `<p class="product__color">${colors[0].ColorName}</p>` : '';
+
+    // Wishlist state
+    const wishlist = getLocalStorage('so-wishlist') || [];
+    const inWishlist = wishlist.some(i => i.Id === this.product.Id);
 
     container.innerHTML = `
-      <h3 class="card__brand">${this.product.Brand.Name}</h3>
-      <h2 class="divider">${this.product.NameWithoutBrand}</h2>
-      <div class="product-detail__image-wrap">
-        ${isSale ? `<span class="product-card__discount product-card__discount--detail">-${discountPct}%</span>` : ''}
-        <img class="divider" src="${imgSrc}" alt="${this.product.Name}" />
+      <div class="product-detail__grid">
+        <div class="product-detail__image-wrap">
+          ${isSale ? `<span class="product-card__discount product-card__discount--detail">-${discountPct}%</span>` : ''}
+          <img src="${imgSrc}" alt="${this.product.Name}" />
+        </div>
+        <div class="product-detail__info">
+          <p class="card__brand">${this.product.Brand.Name}</p>
+          <h1 class="product-detail__name">${this.product.NameWithoutBrand}</h1>
+          <div class="product-card__price product-detail__price">
+            ${isSale
+              ? `<span class="price--original">$${this.product.SuggestedRetailPrice}</span>
+                 <span class="price--sale">$${this.product.FinalPrice}</span>
+                 <span class="price--badge">Save ${discountPct}%</span>`
+              : `<span style="font-size:1.4rem;font-weight:700;">$${this.product.FinalPrice}</span>`
+            }
+          </div>
+          ${colorSwatches}
+          <div class="product__description">${this.product.DescriptionHtmlSimple || ''}</div>
+          <div class="product-detail__actions">
+            <button id="addToCart" class="btn btn--primary product-detail__add-btn">Add to Cart</button>
+            <button id="wishlistBtn" class="btn btn--secondary product-detail__wish-btn">
+              ${inWishlist ? '♥ Saved!' : '♡ Save to Wishlist'}
+            </button>
+          </div>
+        </div>
       </div>
-      <p class="product-card__price">
-        ${isSale
-          ? `<span class="price--original">$${this.product.SuggestedRetailPrice}</span>
-             <span class="price--sale">$${this.product.FinalPrice}</span>
-             <span class="price--badge">Save ${discountPct}%</span>`
-          : `$${this.product.FinalPrice}`
-        }
-      </p>
-      ${colorName ? `<p class="product__color">${colorName}</p>` : ''}
-      <div class="product__description">${this.product.DescriptionHtmlSimple || ''}</div>
-      <div class="product-detail__add">
-        <button id="addToCart" data-id="${this.product.Id}">Add to Cart</button>
-      </div>
+
+      <!-- COMMENTS SECTION -->
+      <section class="comments-section">
+        <h2 class="comments__title">Customer Comments</h2>
+        <div class="comments__list"></div>
+        <div class="comment-form">
+          <h3 class="comment-form__title">Leave a Comment</h3>
+          <input type="text" id="comment-author" class="comment-form__input" placeholder="Your name (optional)" />
+          <textarea id="comment-text" class="comment-form__textarea" placeholder="Share your experience with this product…" rows="3"></textarea>
+          <button id="submit-comment" class="btn btn--primary">Post Comment</button>
+        </div>
+      </section>
     `;
 
+    this.selectedColor = colors[0] ? colors[0].ColorName : null;
+
+    // Color swatch click
+    container.querySelectorAll('.color-swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.selectedColor = btn.dataset.color;
+        const label = container.querySelector('.product-colors__selected');
+        if (label) label.textContent = this.selectedColor;
+      });
+    });
+
+    // Add to cart
     document.getElementById('addToCart').addEventListener('click', this.addToCart.bind(this));
+
+    // Wishlist
+    document.getElementById('wishlistBtn').addEventListener('click', this.toggleWishlist.bind(this));
+
+    // Comments
+    this._renderComments(container);
+    document.getElementById('submit-comment').addEventListener('click', () => {
+      const text = document.getElementById('comment-text').value.trim();
+      const author = document.getElementById('comment-author').value.trim();
+      if (!text) return;
+      this._saveComment(text, author);
+      document.getElementById('comment-text').value = '';
+      document.getElementById('comment-author').value = '';
+      this._renderComments(container);
+    });
   }
 }
