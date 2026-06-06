@@ -14,11 +14,11 @@ export function setLocalStorage(key, data) {
 export function setClick(selector, callback) {
   const element = qs(selector);
   if (element) {
-    element.addEventListener("touchend", (event) => {
+    element.addEventListener('touchend', (event) => {
       event.preventDefault();
       callback();
     });
-    element.addEventListener("click", callback);
+    element.addEventListener('click', callback);
   }
 }
 
@@ -41,18 +41,42 @@ export function updateCartBadge() {
   const cartElement = qs('.cart');
   if (cartElement) {
     let badge = qs('.cart-badge', cartElement);
-    if (!badge && cartItems.length > 0) {
+    if (!badge) {
       badge = document.createElement('span');
       badge.classList.add('cart-badge');
       cartElement.appendChild(badge);
     }
-    if (badge) {
-      if (cartItems.length > 0) {
-        badge.textContent = cartItems.length;
-        badge.style.display = 'block';
-      } else {
-        badge.style.display = 'none';
-      }
+    if (cartItems.length > 0) {
+      badge.textContent = cartItems.length;
+      badge.style.display = 'block';
+    } else {
+      badge.style.display = 'none';
     }
+  }
+}
+
+export function showAlert(message, type = 'info', duration = 3000) {
+  const existing = document.querySelector('.site-alert');
+  if (existing) existing.remove();
+
+  const alert = document.createElement('div');
+  alert.className = `site-alert site-alert--${type}`;
+  alert.setAttribute('role', 'alert');
+  alert.innerHTML = `
+    <span class="site-alert__message">${message}</span>
+    <button class="site-alert__close" aria-label="Close">&times;</button>
+  `;
+
+  const header = document.querySelector('header');
+  if (header && header.nextSibling) {
+    header.parentNode.insertBefore(alert, header.nextSibling);
+  } else {
+    document.body.prepend(alert);
+  }
+
+  alert.querySelector('.site-alert__close').addEventListener('click', () => alert.remove());
+
+  if (duration > 0) {
+    setTimeout(() => alert && alert.remove(), duration);
   }
 }

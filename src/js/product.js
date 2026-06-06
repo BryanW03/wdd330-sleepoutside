@@ -1,6 +1,6 @@
 import { getParam, updateCartBadge } from './utils.mjs';
 import ProductData from './ProductData.mjs';
-import ProductDetail from './ProductDetail.mjs';
+import ProductDetail from './ProductDetails.mjs';
 
 const category = getParam('category') || 'tents';
 const productId = getParam('product');

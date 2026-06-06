@@ -21,11 +21,11 @@
       </div>
     </header>
 
-    <main class="divider">
-      <div class="hero">
+    <main>
+      <div class="hero divider">
         <img
-          src="images/mountain-lake_640.jpg"
-          srcset="images/mountain-lake_640.jpg 640w, images/mountain-lake_1280.jpg 1280w"
+          src="/images/mountain-lake_640.jpg"
+          srcset="/images/mountain-lake_640.jpg 640w, /images/mountain-lake_1280.jpg 1280w"
           sizes="(max-width: 640px) 640px, 1280px"
           alt="image of a high mountain lake"
         />
@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <nav>
+      <nav class="category-nav-wrap">
         <ul class="category-nav">
           <li><a href="?category=tents">🏕️ Tents</a></li>
           <li><a href="?category=backpacks">🎒 Backpacks</a></li>
@@ -47,7 +47,26 @@
       </nav>
 
       <section class="products">
-        <h2 id="category-title">Top Products</h2>
+        <div class="products__toolbar">
+          <h2 id="category-title">Top Products</h2>
+          <div class="products__controls">
+            <input
+              type="search"
+              id="product-search"
+              class="product-search"
+              placeholder="Search products…"
+              aria-label="Search products"
+            />
+            <select id="product-sort" class="product-sort" aria-label="Sort products">
+              <option value="default">Sort: Default</option>
+              <option value="price-asc">Price: Low → High</option>
+              <option value="price-desc">Price: High → Low</option>
+              <option value="name-asc">Name: A → Z</option>
+              <option value="name-desc">Name: Z → A</option>
+              <option value="discount">Best Discount</option>
+            </select>
+          </div>
+        </div>
         <ul class="product-list"></ul>
       </section>
     </main>
@@ -55,33 +74,46 @@
     <footer>&copy;2025 ⛺ SleepOutside ⛺ WDD 330 ⛺ BYU-Idaho for BYU-Pathway Worldwide Online</footer>
 
     <script type="module">
-      import ProductData from './ProductData.mjs';
-      import ProductList from './ProductList.js';
-      import { updateCartBadge } from './utils.mjs';
+      import ProductData from '/js/ProductData.mjs';
+      import ProductList from '/js/ProductList.js';
+      import { updateCartBadge, showAlert } from '/js/utils.mjs';
 
       const params = new URLSearchParams(window.location.search);
       const cat = params.get('category') || 'tents';
-      
-      const titles = { 
-        tents: 'Tents', 
-        backpacks: 'Backpacks', 
-        'sleeping-bags': 'Sleeping Bags' 
+
+      const titles = {
+        tents: 'Tents',
+        backpacks: 'Backpacks',
+        'sleeping-bags': 'Sleeping Bags'
       };
-      
+
       const titleEl = document.getElementById('category-title');
-      if (titleEl && titles[cat]) {
-        titleEl.textContent = `Top Products: ${titles[cat]}`;
+      if (titleEl) {
+        titleEl.textContent = `Top Products: ${titles[cat] || cat}`;
       }
 
       const dataSource = new ProductData(cat);
       const listElement = document.querySelector('.product-list');
-      
+
       if (listElement) {
         const productList = new ProductList(cat, dataSource, listElement);
         productList.init();
       }
 
       updateCartBadge();
+
+      // ── Customizable welcome / promo alert ──────────────────────────────
+      // Change the message, type ('info'|'success'|'error'), and duration (ms)
+      // to customize the banner shown on the home page.
+      const PROMO_MESSAGE = '🏕️ Summer sale — up to 33% off select tents!';
+      const PROMO_TYPE = 'info';       // 'info' | 'success' | 'error'
+      const PROMO_DURATION = 0;        // 0 = stays until closed
+
+      // Show only once per session
+      if (!sessionStorage.getItem('promo-shown')) {
+        showAlert(PROMO_MESSAGE, PROMO_TYPE, PROMO_DURATION);
+        sessionStorage.setItem('promo-shown', '1');
+      }
     </script>
   </body>
 </html>

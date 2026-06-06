@@ -1,7 +1,6 @@
 import ProductData from './ProductData.mjs';
 import ProductList from './ProductList.js';
 
-// Read category from URL param, default to 'tents'
 const params = new URLSearchParams(window.location.search);
 const category = params.get('category') || 'tents';
 
