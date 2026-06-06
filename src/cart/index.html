@@ -4,36 +4,137 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Cart</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style.css" />
     <script src="/js/cart.js" type="module"></script>
   </head>
   <body>
-    <header class="divider">
-      <div class="logo">
-        <img src="/images/noun_Tent_2517.svg" alt="tent image for logo" />
-        <a href="/index.html"> Sleep<span class="highlight">Outside</span></a>
+
+    <!-- HEADER igual que index.html -->
+    <header>
+      <nav class="header__nav header__nav--left">
+        <ul class="category-nav">
+          <li><a href="/index.html?category=tents">Tents</a></li>
+          <li><a href="/index.html?category=backpacks">Backpacks</a></li>
+          <li><a href="/index.html?category=sleeping-bags">Sleeping Bags</a></li>
+        </ul>
+      </nav>
+
+      <div class="header__brand">
+        <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="header__logo-img" />
+        <a href="/index.html" class="header__logo-text">Sleep<span class="highlight">Outside</span></a>
       </div>
-      <div class="cart">
-        <a href="/cart/index.html">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-            <path d="M18.9 32.6c1.1 2.4 2.5 3.3 5.4 3.3 1.6 0 3.6-0.3 5.9-0.6 3.2-0.5 6.9-1 11.2-1 2.1 0 4.3 0.1 6.4 0.3 2.1 0.1 4.2 0.3 6.1 0.3 3.2 0 5.2-0.4 5.9-1.2 2.7-2.7 2.8-8.8 2.9-14.6 0.1-6.7 0.2-14.5 4.6-18.7 -0.5 0-1 0-1.6 0 -14.2 0-37.5 0-41.1 0C15.6 6.2 14.9 23.6 18.9 32.6z"/>
-          </svg>
+
+      <nav class="header__nav header__nav--right">
+        <a href="/cart/index.html" class="header__cart-link">
+          <div class="cart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            <span class="cart-badge"></span>
+          </div>
+          <span class="header__cart-text">Cart</span>
         </a>
-      </div>
+      </nav>
     </header>
 
-    <main class="divider">
-      <section class="products">
-        <h2>My Cart</h2>
-        <ul class="product-list"></ul>
-        <div class="cart-total"></div>
-        <div class="cart-actions">
-          <a href="/index.html" class="btn btn--secondary">← Continue Shopping</a>
-          <a href="/checkout/index.html" class="btn btn--primary">Checkout →</a>
+    <!-- CART CONTENT -->
+    <main class="cart-page">
+      <div class="cart-page__inner">
+        <h1 class="cart-page__title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="cart-page__title-icon">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          My Cart
+        </h1>
+
+        <div class="cart-page__body">
+          <!-- Items list -->
+          <div class="cart-page__items">
+            <ul class="product-list"></ul>
+          </div>
+
+          <!-- Summary sidebar -->
+          <aside class="cart-summary">
+            <h2 class="cart-summary__title">Order Summary</h2>
+            <div class="cart-total"></div>
+            <a href="/checkout/index.html" class="btn btn--primary cart-summary__checkout">Checkout →</a>
+            <a href="/index.html" class="btn btn--secondary cart-summary__continue">← Continue Shopping</a>
+          </aside>
         </div>
-      </section>
+      </div>
     </main>
 
-    <footer>&copy;NOT a real business</footer>
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer__wave">
+        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#2c1f0e"/>
+        </svg>
+      </div>
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <div class="footer__brand-logo">
+              <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="footer__logo" />
+              <span class="footer__name">Sleep<span class="highlight">Outside</span></span>
+            </div>
+            <p class="footer__tagline">Adventure starts at your doorstep.</p>
+            <div class="footer__social">
+              <a href="#" class="footer__social-btn" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#" class="footer__social-btn" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+              </a>
+              <a href="#" class="footer__social-btn" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="footer__links">
+            <div class="footer__col">
+              <h4>Shop</h4>
+              <a href="/index.html?category=tents">🏕️ Tents</a>
+              <a href="/index.html?category=backpacks">🎒 Backpacks</a>
+              <a href="/index.html?category=sleeping-bags">🛌 Sleeping Bags</a>
+            </div>
+            <div class="footer__col">
+              <h4>Help</h4>
+              <a href="#">FAQs</a>
+              <a href="#">Shipping Info</a>
+              <a href="#">Returns</a>
+            </div>
+            <div class="footer__col">
+              <h4>Company</h4>
+              <a href="#">About Us</a>
+              <a href="#">Contact</a>
+              <a href="#">Blog</a>
+            </div>
+          </div>
+        </div>
+        <div class="footer__newsletter">
+          <div class="footer__newsletter-text">
+            <h4>Stay in the wild 🌲</h4>
+            <p>Get gear tips, trail guides, and exclusive deals in your inbox.</p>
+          </div>
+          <div class="footer__newsletter-form">
+            <input type="email" placeholder="your@email.com" class="footer__email-input" />
+            <button class="footer__email-btn">Subscribe</button>
+          </div>
+        </div>
+        <div class="footer__bottom">
+          <p>&copy; 2025 ⛺ SleepOutside &nbsp;·&nbsp; WDD 330 &nbsp;·&nbsp; BYU-Idaho for BYU-Pathway Worldwide Online</p>
+          <p class="footer__legal">Not a real business. Educational purposes only.</p>
+        </div>
+      </div>
+    </footer>
+
   </body>
 </html>

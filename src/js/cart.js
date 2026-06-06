@@ -93,13 +93,18 @@ function updateCartTotal(items) {
   const totalEl = document.querySelector('.cart-total');
   if (totalEl) {
     totalEl.innerHTML = `
-      <span class="cart-total__count">${itemCount} item${itemCount !== 1 ? 's' : ''}</span>
-      <span class="cart-total__amount">Total: <strong>$${total.toFixed(2)}</strong></span>
+      <div class="cart-total__row">
+        <span>Items</span>
+        <span>${itemCount}</span>
+      </div>
+      <div class="cart-total__row">
+        <span>Shipping</span>
+        <span>Free</span>
+      </div>
+      <div class="cart-total__amount">
+        <span>Total</span>
+        <span>$${total.toFixed(2)}</span>
+      </div>
     `;
   }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderCartContents();
-  updateCartBadge();
-});
