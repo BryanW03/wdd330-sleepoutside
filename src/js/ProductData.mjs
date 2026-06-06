@@ -1,28 +1,25 @@
-function productCardTemplate(product) {
-  return `<li class="product-card">
-    <a href="product_pages/index.html?product=${product.Id}">
-      <img src="${product.Image}" alt="Image of ${product.Name}">
-      <h3 class="card__brand">${product.Brand.Name}</h3>
-      <h2 class="card__name">${product.NameWithoutBrand}</h2>
-      <p class="product-card__price">$${product.ListPrice}</p>
-    </a>
-  </li>`;
+function convertToJson(res) {
+  if (res.ok) {
+    return res.json();
+  } else {
+    throw new Error('Bad Response');
+  }
 }
 
-export default class ProductList {
-  constructor(category, dataSource, listElement) {
+export default class ProductData {
+  constructor(category) {
     this.category = category;
-    this.dataSource = dataSource;
-    this.listElement = listElement;
+    this.path = `/json/${this.category}.json`;
   }
 
-  async init() {
-    const list = await this.dataSource.getData();
-    this.renderList(list);
+  async getData() {
+    return fetch(this.path)
+      .then(convertToJson)
+      .then((data) => data.Result || data);
   }
 
-  renderList(list) {
-    const htmlStrings = list.map(productCardTemplate);
-    this.listElement.insertAdjacentHTML('afterbegin', htmlStrings.join(''));
+  async findProductById(id) {
+    const products = await this.getData();
+    return products.find((item) => item.Id === id);
   }
 }

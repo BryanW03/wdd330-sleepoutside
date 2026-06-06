@@ -1,7 +1,6 @@
 import { renderListWithTemplate } from './utils.mjs';
 
 function productCardTemplate(product) {
-  // Handle products from both tents.json (Image) and backpacks/sleeping-bags.json (Images.PrimaryLarge)
   const imgSrc = product.Image || (product.Images && product.Images.PrimaryLarge) || '';
   const isSale = product.SuggestedRetailPrice > product.FinalPrice;
   const discountPct = isSale
@@ -31,12 +30,11 @@ export default class ProductList {
 
   async init() {
     const list = await this.dataSource.getData();
-    // Tag each product with category so template can use it
     list.forEach(p => p.category = this.category);
     this.renderList(list);
   }
 
   renderList(list) {
-    renderListWithTemplate(productCardTemplate, this.listElement, list);
+    renderListWithTemplate(productCardTemplate, this.listElement, list, 'afterbegin', true);
   }
 }
