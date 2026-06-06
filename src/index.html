@@ -4,70 +4,129 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sleep Outside | Home</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <header class="divider">
-      <div class="logo">
-        <img src="/images/noun_Tent_2517.svg" alt="tent image for logo" />
-        <a href="/index.html"> Sleep<span class="highlight">Outside</span></a>
-      </div>
-      <div class="cart">
-        <a href="/cart/index.html">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-            <path d="M18.9 32.6c1.1 2.4 2.5 3.3 5.4 3.3 1.6 0 3.6-0.3 5.9-0.6 3.2-0.5 6.9-1 11.2-1 2.1 0 4.3 0.1 6.4 0.3 2.1 0.1 4.2 0.3 6.1 0.3 3.2 0 5.8-0.9 7.7-2.6 1.9-1.7 2.9-4.2 2.9-7.4 0-2.6-0.7-5-2-7.3l-3.3-5.7c-1.3-2.2-3.1-3.9-5.4-4.9-2.3-1-4.9-1.4-7.7-1.4-2.4 0-4.8 0.3-7.1 0.8-2.3 0.5-4.5 1.3-6.4 2.4-1.2 0.7-2.3 1.5-3.3 2.4l-1.9 1.9c-0.6 0.6-1.1 1.2-1.5 1.9l-3.3 5.7c-0.4 0.7-0.7 1.5-0.9 2.3l-0.3 1.2c-0.1 0.5-0.1 0.9-0.1 1.4 0 1.9 0.6 3.4 1.8 4.6z"/>
-          </svg>
-        </a>
-      </div>
-    </header>
 
-    <main>
-      <section class="hero divider">
-        <img
-          src="/images/mountain-lake_640.jpg"
-          srcset="/images/mountain-lake_640.jpg 640w, /images/mountain-lake_1280.jpg 1280w"
-          sizes="(max-width: 640px) 640px, 1280px"
-          alt="image of a high mountain lake"
-        />
-        <div class="mission">
-          <p>Our mission is to provide you with everything you need to sleep outside comfortably at an affordable price.</p>
-        </div>
-      </section>
-
-      <nav class="category-nav-wrap divider">
+    <!-- HEADER -->
+    <header>
+      <!-- Izquierda: nav categorías -->
+      <nav class="header__nav header__nav--left">
         <ul class="category-nav">
-          <li><a href="?category=tents">🏕️ Tents</a></li>
-          <li><a href="?category=backpacks">🎒 Backpacks</a></li>
-          <li><a href="?category=sleeping-bags">🛌 Sleeping Bags</a></li>
+          <li><a href="?category=tents">Tents</a></li>
+          <li><a href="?category=backpacks">Backpacks</a></li>
+          <li><a href="?category=sleeping-bags">Sleeping Bags</a></li>
         </ul>
       </nav>
 
-      <section class="products">
-        <div class="products__toolbar">
-          <h2 id="category-title">Top Products</h2>
-          <div class="products__controls">
-            <input
-              type="search"
-              id="product-search"
-              class="product-search"
-              placeholder="Search products…"
-              aria-label="Search products"
-            />
-            <select id="product-sort" class="product-sort" aria-label="Sort products">
-              <option value="default">Sort: Default</option>
-              <option value="price-asc">Price: Low → High</option>
-              <option value="price-desc">Price: High → Low</option>
-              <option value="name-asc">Name: A → Z</option>
-              <option value="name-desc">Name: Z → A</option>
-              <option value="discount">Best Discount</option>
-            </select>
+      <!-- Centro: logo -->
+      <div class="header__brand">
+        <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="header__logo-img" />
+        <a href="/index.html" class="header__logo-text">Sleep<span class="highlight">Outside</span></a>
+      </div>
+
+      <!-- Derecha: carrito -->
+      <nav class="header__nav header__nav--right">
+        <a href="/cart/index.html" class="header__cart-link">
+          <div class="cart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            <span class="cart-badge"></span>
           </div>
+          <span class="header__cart-text">Cart</span>
+        </a>
+      </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <img
+        class="hero__img"
+        src="/images/mountain-lake_640.jpg"
+        srcset="/images/mountain-lake_640.jpg 640w, /images/mountain-lake_1280.jpg 1280w"
+        sizes="(max-width: 640px) 640px, 1280px"
+        alt="High mountain lake"
+        onerror="this.style.display='none'"
+      />
+      <div class="hero__overlay"></div>
+      <div class="hero__content">
+        <p class="hero__eyebrow">Summer Collection 2025</p>
+        <h1 class="hero__title">Sleep<br/><span class="highlight">Outside</span></h1>
+        <p class="hero__sub">Everything you need to sleep under the stars — comfortably, affordably, unforgettably.</p>
+        <a href="?category=tents" class="hero__cta">Shop Tents →</a>
+      </div>
+    </section>
+
+    <!-- MAIN -->
+    <main class="main-content">
+      <div class="products__toolbar">
+        <h2 id="category-title" class="section-title">Top Products</h2>
+        <div class="products__controls">
+          <div class="search-wrap">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="search" id="product-search" class="product-search" placeholder="Search products…" aria-label="Search products" />
+          </div>
+          <select id="product-sort" class="product-sort" aria-label="Sort products">
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="name-desc">Name Z–A</option>
+            <option value="discount">Best Discount</option>
+          </select>
         </div>
-        <ul class="product-list"></ul>
-      </section>
+      </div>
+
+      <div class="carousel-wrap">
+        <button class="carousel-btn carousel-btn--prev" aria-label="Previous">&#8592;</button>
+        <ul class="product-list" id="product-list"></ul>
+        <button class="carousel-btn carousel-btn--next" aria-label="Next">&#8594;</button>
+      </div>
+      <div class="carousel-dots" id="carousel-dots"></div>
     </main>
 
-    <footer>&copy;2025 ⛺ SleepOutside ⛺ WDD 330 ⛺ BYU-Idaho for BYU-Pathway Worldwide Online</footer>
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="footer__logo" />
+          <span class="footer__name">Sleep<span class="highlight">Outside</span></span>
+          <p class="footer__tagline">Adventure starts at your doorstep.</p>
+        </div>
+        <div class="footer__links">
+          <div class="footer__col">
+            <h4>Shop</h4>
+            <a href="?category=tents">Tents</a>
+            <a href="?category=backpacks">Backpacks</a>
+            <a href="?category=sleeping-bags">Sleeping Bags</a>
+          </div>
+          <div class="footer__col">
+            <h4>Help</h4>
+            <a href="#">FAQs</a>
+            <a href="#">Shipping</a>
+            <a href="#">Returns</a>
+          </div>
+          <div class="footer__col">
+            <h4>Company</h4>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+            <a href="#">Blog</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p>&copy; 2025 ⛺ SleepOutside &nbsp;·&nbsp; WDD 330 &nbsp;·&nbsp; BYU-Idaho for BYU-Pathway Worldwide Online</p>
+        <p class="footer__legal">Not a real business. For educational purposes only.</p>
+      </div>
+    </footer>
 
     <script type="module">
       import ProductData from '/js/ProductData.mjs';
@@ -77,34 +136,71 @@
       const params = new URLSearchParams(window.location.search);
       const cat = params.get('category') || 'tents';
 
-      const titles = {
-        tents: 'Tents',
-        backpacks: 'Backpacks',
-        'sleeping-bags': 'Sleeping Bags'
-      };
-
+      const titles = { tents: 'Tents', backpacks: 'Backpacks', 'sleeping-bags': 'Sleeping Bags' };
       const titleEl = document.getElementById('category-title');
-      if (titleEl) {
-        titleEl.textContent = `Top Products: ${titles[cat] || cat}`;
-      }
+      if (titleEl) titleEl.textContent = `Top Products: ${titles[cat] || cat}`;
 
       const dataSource = new ProductData(cat);
-      const listElement = document.querySelector('.product-list');
+      const listElement = document.getElementById('product-list');
 
       if (listElement) {
         const productList = new ProductList(cat, dataSource, listElement);
-        productList.init();
+        await productList.init();
+        initCarousel();
       }
 
       updateCartBadge();
 
-      const PROMO_MESSAGE = '🏕️ Summer sale — up to 35% off select tents!';
-      const PROMO_TYPE = 'info';
-      const PROMO_DURATION = 0;
-
       if (!sessionStorage.getItem('promo-shown')) {
-        showAlert(PROMO_MESSAGE, PROMO_TYPE, PROMO_DURATION);
+        showAlert('🏕️ Summer sale — up to 35% off select tents!', 'info', 0);
         sessionStorage.setItem('promo-shown', '1');
+      }
+
+      function initCarousel() {
+        const list = document.getElementById('product-list');
+        const dotsContainer = document.getElementById('carousel-dots');
+        const btnPrev = document.querySelector('.carousel-btn--prev');
+        const btnNext = document.querySelector('.carousel-btn--next');
+        let current = 0;
+
+        function getVisible() {
+          if (window.innerWidth < 600) return 1;
+          if (window.innerWidth < 900) return 2;
+          if (window.innerWidth < 1200) return 3;
+          return 4;
+        }
+        function getCards() { return list.querySelectorAll('.product-card'); }
+
+        function buildDots() {
+          const total = Math.ceil(getCards().length / getVisible());
+          dotsContainer.innerHTML = '';
+          for (let i = 0; i < total; i++) {
+            const d = document.createElement('button');
+            d.className = 'carousel-dot' + (i === current ? ' active' : '');
+            d.setAttribute('aria-label', `Slide ${i + 1}`);
+            d.addEventListener('click', () => goTo(i));
+            dotsContainer.appendChild(d);
+          }
+        }
+
+        function goTo(index) {
+          const cards = getCards();
+          const vis = getVisible();
+          const total = Math.ceil(cards.length / vis);
+          current = Math.max(0, Math.min(index, total - 1));
+          if (cards[0]) {
+            const cardW = cards[0].offsetWidth + 16;
+            list.scrollTo({ left: current * vis * cardW, behavior: 'smooth' });
+          }
+          dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) => {
+            d.classList.toggle('active', i === current);
+          });
+        }
+
+        btnPrev && btnPrev.addEventListener('click', () => goTo(current - 1));
+        btnNext && btnNext.addEventListener('click', () => goTo(current + 1));
+        buildDots();
+        window.addEventListener('resize', () => { buildDots(); goTo(0); });
       }
     </script>
   </body>
