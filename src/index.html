@@ -13,7 +13,6 @@
 
     <!-- HEADER -->
     <header>
-      <!-- Izquierda: nav categorías -->
       <nav class="header__nav header__nav--left">
         <ul class="category-nav">
           <li><a href="?category=tents">Tents</a></li>
@@ -22,13 +21,11 @@
         </ul>
       </nav>
 
-      <!-- Centro: logo -->
       <div class="header__brand">
         <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="header__logo-img" />
         <a href="/index.html" class="header__logo-text">Sleep<span class="highlight">Outside</span></a>
       </div>
 
-      <!-- Derecha: carrito -->
       <nav class="header__nav header__nav--right">
         <a href="/cart/index.html" class="header__cart-link">
           <div class="cart">
@@ -95,36 +92,72 @@
 
     <!-- FOOTER -->
     <footer class="site-footer">
-      <div class="footer__top">
-        <div class="footer__brand">
-          <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="footer__logo" />
-          <span class="footer__name">Sleep<span class="highlight">Outside</span></span>
-          <p class="footer__tagline">Adventure starts at your doorstep.</p>
-        </div>
-        <div class="footer__links">
-          <div class="footer__col">
-            <h4>Shop</h4>
-            <a href="?category=tents">Tents</a>
-            <a href="?category=backpacks">Backpacks</a>
-            <a href="?category=sleeping-bags">Sleeping Bags</a>
-          </div>
-          <div class="footer__col">
-            <h4>Help</h4>
-            <a href="#">FAQs</a>
-            <a href="#">Shipping</a>
-            <a href="#">Returns</a>
-          </div>
-          <div class="footer__col">
-            <h4>Company</h4>
-            <a href="#">About Us</a>
-            <a href="#">Contact</a>
-            <a href="#">Blog</a>
-          </div>
-        </div>
+      <div class="footer__wave">
+        <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#2c1f0e"/>
+        </svg>
       </div>
-      <div class="footer__bottom">
-        <p>&copy; 2025 ⛺ SleepOutside &nbsp;·&nbsp; WDD 330 &nbsp;·&nbsp; BYU-Idaho for BYU-Pathway Worldwide Online</p>
-        <p class="footer__legal">Not a real business. For educational purposes only.</p>
+
+      <div class="footer__inner">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <div class="footer__brand-logo">
+              <img src="/images/noun_Tent_2517.svg" alt="tent logo" class="footer__logo" />
+              <span class="footer__name">Sleep<span class="highlight">Outside</span></span>
+            </div>
+            <p class="footer__tagline">Adventure starts at your doorstep.</p>
+            <div class="footer__social">
+              <a href="#" class="footer__social-btn" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#" class="footer__social-btn" aria-label="Facebook">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+              </a>
+              <a href="#" class="footer__social-btn" aria-label="YouTube">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="footer__links">
+            <div class="footer__col">
+              <h4>Shop</h4>
+              <a href="?category=tents">🏕️ Tents</a>
+              <a href="?category=backpacks">🎒 Backpacks</a>
+              <a href="?category=sleeping-bags">🛌 Sleeping Bags</a>
+            </div>
+            <div class="footer__col">
+              <h4>Help</h4>
+              <a href="#">FAQs</a>
+              <a href="#">Shipping Info</a>
+              <a href="#">Returns</a>
+              <a href="#">Track Order</a>
+            </div>
+            <div class="footer__col">
+              <h4>Company</h4>
+              <a href="#">About Us</a>
+              <a href="#">Contact</a>
+              <a href="#">Blog</a>
+              <a href="#">Careers</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer__newsletter">
+          <div class="footer__newsletter-text">
+            <h4>Stay in the wild 🌲</h4>
+            <p>Get gear tips, trail guides, and exclusive deals in your inbox.</p>
+          </div>
+          <div class="footer__newsletter-form">
+            <input type="email" placeholder="your@email.com" class="footer__email-input" />
+            <button class="footer__email-btn">Subscribe</button>
+          </div>
+        </div>
+
+        <div class="footer__bottom">
+          <p>&copy; 2025 ⛺ SleepOutside &nbsp;·&nbsp; WDD 330 &nbsp;·&nbsp; BYU-Idaho for BYU-Pathway Worldwide Online</p>
+          <p class="footer__legal">Not a real business. Educational purposes only.</p>
+        </div>
       </div>
     </footer>
 
@@ -133,27 +166,30 @@
       import ProductList from '/js/ProductList.js';
       import { updateCartBadge, showAlert } from '/js/utils.mjs';
 
-      const params = new URLSearchParams(window.location.search);
-      const cat = params.get('category') || 'tents';
+      
+      async function init() {
+        const params = new URLSearchParams(window.location.search);
+        const cat = params.get('category') || 'tents';
 
-      const titles = { tents: 'Tents', backpacks: 'Backpacks', 'sleeping-bags': 'Sleeping Bags' };
-      const titleEl = document.getElementById('category-title');
-      if (titleEl) titleEl.textContent = `Top Products: ${titles[cat] || cat}`;
+        const titles = { tents: 'Tents', backpacks: 'Backpacks', 'sleeping-bags': 'Sleeping Bags' };
+        const titleEl = document.getElementById('category-title');
+        if (titleEl) titleEl.textContent = `Top Products: ${titles[cat] || cat}`;
 
-      const dataSource = new ProductData(cat);
-      const listElement = document.getElementById('product-list');
+        const dataSource = new ProductData(cat);
+        const listElement = document.getElementById('product-list');
 
-      if (listElement) {
-        const productList = new ProductList(cat, dataSource, listElement);
-        await productList.init();
-        initCarousel();
-      }
+        if (listElement) {
+          const productList = new ProductList(cat, dataSource, listElement);
+          await productList.init();
+          initCarousel();
+        }
 
-      updateCartBadge();
+        updateCartBadge();
 
-      if (!sessionStorage.getItem('promo-shown')) {
-        showAlert('🏕️ Summer sale — up to 35% off select tents!', 'info', 0);
-        sessionStorage.setItem('promo-shown', '1');
+        if (!sessionStorage.getItem('promo-shown')) {
+          showAlert('🏕️ Summer sale — up to 35% off select tents!', 'info', 0);
+          sessionStorage.setItem('promo-shown', '1');
+        }
       }
 
       function initCarousel() {
@@ -202,6 +238,8 @@
         buildDots();
         window.addEventListener('resize', () => { buildDots(); goTo(0); });
       }
+
+      init();
     </script>
   </body>
 </html>
