@@ -22,23 +22,19 @@
     </header>
 
     <main>
-      <div class="hero divider">
+      <section class="hero divider">
         <img
           src="/images/mountain-lake_640.jpg"
           srcset="/images/mountain-lake_640.jpg 640w, /images/mountain-lake_1280.jpg 1280w"
           sizes="(max-width: 640px) 640px, 1280px"
           alt="image of a high mountain lake"
         />
-        <div class="logo logo--square">
-          <img src="/images/noun_Tent_2517.svg" alt="tent image for logo" />
-          <div>Sleep<span class="highlight">Outside</span></div>
-        </div>
         <div class="mission">
           <p>Our mission is to provide you with everything you need to sleep outside comfortably at an affordable price.</p>
         </div>
-      </div>
+      </section>
 
-      <nav class="category-nav-wrap">
+      <nav class="category-nav-wrap divider">
         <ul class="category-nav">
           <li><a href="?category=tents">🏕️ Tents</a></li>
           <li><a href="?category=backpacks">🎒 Backpacks</a></li>
@@ -102,14 +98,10 @@
 
       updateCartBadge();
 
-      // ── Customizable welcome / promo alert ──────────────────────────────
-      // Change the message, type ('info'|'success'|'error'), and duration (ms)
-      // to customize the banner shown on the home page.
-      const PROMO_MESSAGE = '🏕️ Summer sale — up to 33% off select tents!';
-      const PROMO_TYPE = 'info';       // 'info' | 'success' | 'error'
-      const PROMO_DURATION = 0;        // 0 = stays until closed
+      const PROMO_MESSAGE = '🏕️ Summer sale — up to 35% off select tents!';
+      const PROMO_TYPE = 'info';
+      const PROMO_DURATION = 0;
 
-      // Show only once per session
       if (!sessionStorage.getItem('promo-shown')) {
         showAlert(PROMO_MESSAGE, PROMO_TYPE, PROMO_DURATION);
         sessionStorage.setItem('promo-shown', '1');
