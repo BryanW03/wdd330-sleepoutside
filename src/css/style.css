@@ -270,7 +270,13 @@ header {
   border-radius: var(--radius); font-family: var(--font-body); font-size: 0.95rem;
 }
 .modal__input:focus { outline: none; border-color: var(--secondary); }
-.modal__submit { margin-top: 0.25rem; }
+.modal__submit {
+  display: block !important;
+  text-align: center !important;
+  width: 100%;
+  padding: 0.9rem 1.4rem;
+  box-sizing: border-box;
+}
 .modal__skip {
   display: block; margin: 1rem auto 0;
   background: none; border: none; font-size: 0.82rem;
