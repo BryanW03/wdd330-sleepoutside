@@ -37,13 +37,11 @@
           <span>Sleep<span class="highlight">Outside</span></span>
         </div>
 
-        <!-- Tabs -->
         <div class="auth-tabs">
           <button class="auth-tab active" id="tab-login">Sign In</button>
           <button class="auth-tab" id="tab-register">Sign Up</button>
         </div>
 
-        <!-- Error/success message -->
         <div id="auth-msg" class="auth-msg" style="display:none;"></div>
 
         <!-- LOGIN FORM -->
@@ -60,7 +58,10 @@
             </div>
           </div>
           <button type="submit" class="btn btn--primary auth-submit" id="login-btn">Sign In</button>
-          <p class="auth-switch">Don't have an account? <button type="button" class="auth-link" id="go-register">Sign Up</button></p>
+          <p class="auth-switch">
+            Don't have an account?
+            <button type="button" class="auth-link" id="go-register">Sign Up</button>
+          </p>
         </form>
 
         <!-- REGISTER FORM -->
@@ -85,14 +86,17 @@
             <input type="password" id="reg-confirm" class="form-input" placeholder="Repeat password" required />
           </div>
           <button type="submit" class="btn btn--primary auth-submit" id="register-btn">Create Account</button>
-          <p class="auth-switch">Already have an account? <button type="button" class="auth-link" id="go-login">Sign In</button></p>
+          <p class="auth-switch">
+            Already have an account?
+            <button type="button" class="auth-link" id="go-login">Sign In</button>
+          </p>
         </form>
       </div>
     </main>
 
     <footer class="site-footer">
       <div class="footer__inner">
-        <div class="footer__bottom">
+        <div class="footer__bottom" style="padding: 1.25rem 0;">
           <p>&copy; 2025 ⛺ SleepOutside</p>
         </div>
       </div>
@@ -104,17 +108,15 @@
 
       updateCartBadge();
 
-      // If already logged in, redirect home
       if (Auth.isLoggedIn()) {
-        window.location.href = '/';
+        window.location.href = '/index.html';
       }
 
-      // Tabs
-      const tabLogin    = document.getElementById('tab-login');
-      const tabRegister = document.getElementById('tab-register');
-      const loginForm   = document.getElementById('login-form');
+      const tabLogin     = document.getElementById('tab-login');
+      const tabRegister  = document.getElementById('tab-register');
+      const loginForm    = document.getElementById('login-form');
       const registerForm = document.getElementById('register-form');
-      const msg = document.getElementById('auth-msg');
+      const msg          = document.getElementById('auth-msg');
 
       function showMsg(text, type = 'error') {
         msg.textContent = text;
@@ -143,7 +145,7 @@
       document.getElementById('go-register').addEventListener('click', switchToRegister);
       document.getElementById('go-login').addEventListener('click', switchToLogin);
 
-      // Password visibility
+      // Toggle password visibility
       document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', () => {
           const input = document.getElementById(btn.dataset.target);
@@ -159,11 +161,11 @@
         btn.textContent = 'Signing in…';
         btn.disabled = true;
         try {
-          const email = document.getElementById('login-email').value.trim();
+          const email    = document.getElementById('login-email').value.trim();
           const password = document.getElementById('login-password').value;
           await Auth.login(email, password);
           showMsg('✅ Signed in! Redirecting…', 'success');
-          setTimeout(() => { window.location.href = '/'; }, 1000);
+          setTimeout(() => { window.location.href = '/index.html'; }, 1000);
         } catch (err) {
           showMsg(err.message || 'Login failed. Check your credentials.');
           btn.textContent = 'Sign In';
@@ -189,15 +191,15 @@
           const email = document.getElementById('reg-email').value.trim();
           await Auth.register(name, email, password);
           showMsg('🎉 Account created! Redirecting…', 'success');
-          setTimeout(() => { window.location.href = '/'; }, 1000);
+          setTimeout(() => { window.location.href = '/index.html'; }, 1000);
         } catch (err) {
-          showMsg(err.message || 'Registration failed.');
+          showMsg(err.message || 'Registration failed. Try a different email.');
           btn.textContent = 'Create Account';
           btn.disabled = false;
         }
       });
 
-      // Check URL for ?tab=register
+      // Check URL tab param
       if (new URLSearchParams(window.location.search).get('tab') === 'register') {
         switchToRegister();
       }
