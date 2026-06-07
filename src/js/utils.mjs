@@ -74,9 +74,9 @@ export function showAlert(message, type = 'info', duration = 3000) {
     document.body.prepend(alert);
   }
 
-  alert.querySelector('.site-alert__close').addEventListener('click', () => alert.remove());
+  alert.querySelector('.site-alert__close')?.addEventListener('click', () => alert.remove());
 
   if (duration > 0) {
-    setTimeout(() => alert && alert.remove(), duration);
+    setTimeout(() => alert?.remove(), duration);
   }
 }
