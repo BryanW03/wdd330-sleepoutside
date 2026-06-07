@@ -270,11 +270,15 @@ header {
   border-radius: var(--radius); font-family: var(--font-body); font-size: 0.95rem;
 }
 .modal__input:focus { outline: none; border-color: var(--secondary); }
+/* Fix modal Register Now button */
 .modal__submit {
-  display: block !important;
-  text-align: center !important;
+  display: block;
   width: 100%;
-  padding: 0.9rem 1.4rem;
+  text-align: center;
+  padding: 0.85rem 1.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
   box-sizing: border-box;
 }
 .modal__skip {

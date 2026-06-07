@@ -1,5 +1,12 @@
 import { setLocalStorage, getLocalStorage, updateCartBadge, showAlert } from './utils.mjs';
 
+function getImageSrc(product) {
+  if (product.Image) return product.Image;
+  if (product.Images && product.Images.PrimaryLarge) return product.Images.PrimaryLarge;
+  if (product.Images && product.Images.PrimaryMedium) return product.Images.PrimaryMedium;
+  return '';
+}
+
 export default class ProductDetail {
   constructor(productId, dataSource) {
     this.productId = productId;
@@ -106,8 +113,7 @@ export default class ProductDetail {
     if (!container || !this.product) return;
 
     const colors = this.product.Colors || [];
-    // Use first color image if available, else fallback to product Image
-    const firstImg = colors[0]?.ColorImg || this.product.Image || '';
+    const firstImg = colors[0]?.ColorImg || getImageSrc(this.product);
     this.selectedColor = colors[0]?.ColorName || null;
 
     const isSale = this.product.SuggestedRetailPrice > this.product.FinalPrice;
@@ -115,7 +121,7 @@ export default class ProductDetail {
       ? Math.round(((this.product.SuggestedRetailPrice - this.product.FinalPrice) / this.product.SuggestedRetailPrice) * 100)
       : 0;
 
-    // Build color swatches only if more than 1 color
+    // Color swatches — only if more than 1 color
     const colorSwatches = colors.length > 1
       ? `<div class="product-colors">
            <p class="product-colors__label">Color: <span id="color-selected-name">${colors[0].ColorName}</span></p>
@@ -125,7 +131,7 @@ export default class ProductDetail {
                  class="color-swatch${i === 0 ? ' active' : ''}"
                  data-index="${i}"
                  data-color="${c.ColorName}"
-                 data-img="${c.ColorImg || ''}"
+                 data-img="${c.ColorImg || getImageSrc(this.product)}"
                  title="${c.ColorName}"
                >
                  <span class="color-swatch__dot"></span>
@@ -138,7 +144,6 @@ export default class ProductDetail {
         ? `<p class="product__color">Color: <strong>${colors[0].ColorName}</strong></p>`
         : '';
 
-    // Wishlist state
     const wishlist = getLocalStorage('so-wishlist') || [];
     const inWishlist = wishlist.some(i => i.Id === this.product.Id);
 
@@ -146,7 +151,8 @@ export default class ProductDetail {
       <div class="product-detail__grid">
         <div class="product-detail__image-wrap">
           ${isSale ? `<span class="product-card__discount product-card__discount--detail">-${discountPct}%</span>` : ''}
-          <img id="product-main-img" src="${firstImg}" alt="${this.product.Name}" />
+          <img id="product-main-img" src="${firstImg}" alt="${this.product.Name}"
+               onerror="this.src=''; this.alt='Image not available';" />
         </div>
         <div class="product-detail__info">
           <p class="card__brand">${this.product.Brand.Name}</p>
@@ -159,11 +165,8 @@ export default class ProductDetail {
               : `<span style="font-size:1.4rem;font-weight:700;">$${this.product.FinalPrice}</span>`
             }
           </div>
-
           ${colorSwatches}
-
           <div class="product__description">${this.product.DescriptionHtmlSimple || ''}</div>
-
           <div class="product-detail__actions">
             <button id="addToCart" class="btn btn--primary product-detail__add-btn">Add to Cart</button>
             <button id="wishlistBtn" class="btn btn--secondary product-detail__wish-btn">
@@ -185,19 +188,14 @@ export default class ProductDetail {
       </section>
     `;
 
-    // ── Color swatch click → change image ──────────────────────────
+    // Color swatch → change image with fade
     container.querySelectorAll('.color-swatch').forEach(btn => {
       btn.addEventListener('click', () => {
-        // Update active state
         container.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        // Update selected color name
         this.selectedColor = btn.dataset.color;
         const nameEl = document.getElementById('color-selected-name');
         if (nameEl) nameEl.textContent = this.selectedColor;
-
-        // Change main product image
         const newImg = btn.dataset.img;
         const mainImg = document.getElementById('product-main-img');
         if (mainImg && newImg) {
@@ -210,20 +208,16 @@ export default class ProductDetail {
       });
     });
 
-    // Add to cart
     document.getElementById('addToCart').addEventListener('click', this.addToCart.bind(this));
-
-    // Wishlist
     document.getElementById('wishlistBtn').addEventListener('click', this.toggleWishlist.bind(this));
 
-    // Comments
     this._renderComments(container);
     document.getElementById('submit-comment').addEventListener('click', () => {
-      const text = document.getElementById('comment-text').value.trim();
+      const text   = document.getElementById('comment-text').value.trim();
       const author = document.getElementById('comment-author').value.trim();
       if (!text) return;
       this._saveComment(text, author);
-      document.getElementById('comment-text').value = '';
+      document.getElementById('comment-text').value   = '';
       document.getElementById('comment-author').value = '';
       this._renderComments(container);
     });

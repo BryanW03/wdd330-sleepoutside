@@ -17,40 +17,67 @@ export default class Auth {
   static logout() {
     localStorage.removeItem('so-token');
     localStorage.removeItem('so-user');
-    window.location.href = '/';
+    window.location.href = '/index.html';
   }
 
-  // POST /login  { email, password }
   static async login(email, password) {
     const res = await fetch(`${API_BASE}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
+
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Invalid credentials');
+      throw new Error(
+        data.message ||
+        data.error   ||
+        'Incorrect email or password. Please try again.'
+      );
     }
-    const data = await res.json();
-    localStorage.setItem('so-token', data.token || data.accessToken || '');
-    localStorage.setItem('so-user', JSON.stringify({ email, name: data.name || email }));
+
+    const token = data.token || data.accessToken || data.access_token || '';
+    localStorage.setItem('so-token', token);
+    localStorage.setItem('so-user', JSON.stringify({
+      email,
+      name: data.name || data.firstName || email.split('@')[0]
+    }));
     return data;
   }
 
-  // POST /users  { name, email, password }
   static async register(name, email, password) {
     const res = await fetch(`${API_BASE}/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password })
     });
+
+    const data = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Registration failed');
+      // Common errors from this API
+      if (res.status === 400) {
+        throw new Error(data.message || 'This email may already be registered. Try signing in instead.');
+      }
+      if (res.status === 409) {
+        throw new Error('An account with this email already exists. Please sign in.');
+      }
+      throw new Error(data.message || data.error || 'Registration failed. Please try again.');
     }
-    const data = await res.json();
-    // Auto-login after register
-    await Auth.login(email, password);
+
+    // Auto-login after successful register
+    try {
+      await Auth.login(email, password);
+    } catch {
+      // If auto-login fails, store token from register response if available
+      const token = data.token || data.accessToken || data.access_token || '';
+      if (token) {
+        localStorage.setItem('so-token', token);
+        localStorage.setItem('so-user', JSON.stringify({ email, name }));
+      }
+    }
+
     return data;
   }
 }

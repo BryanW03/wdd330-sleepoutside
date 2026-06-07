@@ -1,7 +1,14 @@
 import { renderListWithTemplate } from './utils.mjs';
 
+function getImageSrc(product) {
+  if (product.Image) return product.Image;
+  if (product.Images && product.Images.PrimaryLarge) return product.Images.PrimaryLarge;
+  if (product.Images && product.Images.PrimaryMedium) return product.Images.PrimaryMedium;
+  return '';
+}
+
 function productCardTemplate(product) {
-  const imgSrc = product.Image || (product.Images && product.Images.PrimaryLarge) || '';
+  const imgSrc = getImageSrc(product);
   const isSale = product.SuggestedRetailPrice > product.FinalPrice;
   const discountPct = isSale
     ? Math.round(((product.SuggestedRetailPrice - product.FinalPrice) / product.SuggestedRetailPrice) * 100)
@@ -10,16 +17,18 @@ function productCardTemplate(product) {
   return `<li class="product-card">
     <a href="/product_pages/index.html?product=${product.Id}&category=${product.category || ''}">
       ${isSale ? `<span class="product-card__discount">-${discountPct}%</span>` : ''}
-      <img src="${imgSrc}" alt="Image of ${product.Name}" loading="lazy">
-      <h3 class="card__brand">${product.Brand.Name}</h3>
-      <h2 class="card__name">${product.NameWithoutBrand}</h2>
-      <p class="product-card__price">
-        ${isSale
-          ? `<span class="price--original">$${product.SuggestedRetailPrice}</span>
-             <span class="price--sale">$${product.FinalPrice}</span>`
-          : `$${product.FinalPrice}`
-        }
-      </p>
+      <img src="${imgSrc}" alt="Image of ${product.Name}" loading="lazy" onerror="this.style.display='none'">
+      <div class="product-card__info">
+        <p class="card__brand">${product.Brand.Name}</p>
+        <h2 class="card__name">${product.NameWithoutBrand}</h2>
+        <div class="product-card__price">
+          ${isSale
+            ? `<span class="price--original">$${product.SuggestedRetailPrice}</span>
+               <span class="price--sale">$${product.FinalPrice}</span>`
+            : `<span>$${product.FinalPrice}</span>`
+          }
+        </div>
+      </div>
     </a>
   </li>`;
 }
@@ -48,7 +57,6 @@ export default class ProductList {
     renderListWithTemplate(productCardTemplate, this.listElement, list, 'afterbegin', true);
   }
 
-  // ── Search ──────────────────────────────────────────────────────────────
   _filterProducts(query) {
     const q = query.toLowerCase().trim();
     if (!q) return this.allProducts;
@@ -59,49 +67,38 @@ export default class ProductList {
     );
   }
 
-  // ── Sort ────────────────────────────────────────────────────────────────
   _sortProducts(list, sortBy) {
     const sorted = [...list];
     switch (sortBy) {
-      case 'price-asc':
-        return sorted.sort((a, b) => a.FinalPrice - b.FinalPrice);
-      case 'price-desc':
-        return sorted.sort((a, b) => b.FinalPrice - a.FinalPrice);
-      case 'name-asc':
-        return sorted.sort((a, b) => a.Name.localeCompare(b.Name));
-      case 'name-desc':
-        return sorted.sort((a, b) => b.Name.localeCompare(a.Name));
+      case 'price-asc':  return sorted.sort((a, b) => a.FinalPrice - b.FinalPrice);
+      case 'price-desc': return sorted.sort((a, b) => b.FinalPrice - a.FinalPrice);
+      case 'name-asc':   return sorted.sort((a, b) => a.Name.localeCompare(b.Name));
+      case 'name-desc':  return sorted.sort((a, b) => b.Name.localeCompare(a.Name));
       case 'discount':
         return sorted.sort((a, b) => {
-          const discA = a.SuggestedRetailPrice > a.FinalPrice
+          const dA = a.SuggestedRetailPrice > a.FinalPrice
             ? (a.SuggestedRetailPrice - a.FinalPrice) / a.SuggestedRetailPrice : 0;
-          const discB = b.SuggestedRetailPrice > b.FinalPrice
+          const dB = b.SuggestedRetailPrice > b.FinalPrice
             ? (b.SuggestedRetailPrice - b.FinalPrice) / b.SuggestedRetailPrice : 0;
-          return discB - discA;
+          return dB - dA;
         });
-      default:
-        return sorted;
+      default: return sorted;
     }
   }
 
-  // ── Wire up search + sort controls ──────────────────────────────────────
   _setupControls() {
     const searchInput = document.getElementById('product-search');
-    const sortSelect = document.getElementById('product-sort');
+    const sortSelect  = document.getElementById('product-sort');
 
     const refresh = () => {
-      const query = searchInput ? searchInput.value : '';
-      const sortBy = sortSelect ? sortSelect.value : 'default';
+      const query  = searchInput ? searchInput.value : '';
+      const sortBy = sortSelect  ? sortSelect.value  : 'default';
       const filtered = this._filterProducts(query);
-      const sorted = this._sortProducts(filtered, sortBy);
+      const sorted   = this._sortProducts(filtered, sortBy);
       this.renderList(sorted);
     };
 
-    if (searchInput) {
-      searchInput.addEventListener('input', refresh);
-    }
-    if (sortSelect) {
-      sortSelect.addEventListener('change', refresh);
-    }
+    if (searchInput) searchInput.addEventListener('input', refresh);
+    if (sortSelect)  sortSelect.addEventListener('change', refresh);
   }
 }
