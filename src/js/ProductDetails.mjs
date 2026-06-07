@@ -36,14 +36,12 @@ export default class ProductDetail {
   addToCart() {
     let cartItems = getLocalStorage('so-cart');
     if (!Array.isArray(cartItems)) cartItems = [];
-
     const existingIndex = cartItems.findIndex(i => i.Id === this.product.Id);
     if (existingIndex >= 0) {
       cartItems[existingIndex].qty = (cartItems[existingIndex].qty || 1) + 1;
     } else {
       cartItems.push({ ...this.product, qty: 1, selectedColor: this.selectedColor });
     }
-
     setLocalStorage('so-cart', cartItems);
     showAlert(`"${this.product.Name}" added to cart!`, 'success', 3000);
     this._btnFeedback();
@@ -75,15 +73,13 @@ export default class ProductDetail {
   }
 
   _loadComments() {
-    const key = `so-comments-${this.product.Id}`;
-    return getLocalStorage(key) || [];
+    return getLocalStorage(`so-comments-${this.product.Id}`) || [];
   }
 
   _saveComment(text, author) {
-    const key = `so-comments-${this.product.Id}`;
     const comments = this._loadComments();
     comments.push({ text, author: author || 'Anonymous', date: new Date().toLocaleDateString() });
-    setLocalStorage(key, comments);
+    setLocalStorage(`so-comments-${this.product.Id}`, comments);
   }
 
   _renderComments(container) {
@@ -109,30 +105,38 @@ export default class ProductDetail {
     const container = document.querySelector(selector);
     if (!container || !this.product) return;
 
-    const imgSrc = this.product.Image || (this.product.Images && this.product.Images.PrimaryLarge) || '';
+    const colors = this.product.Colors || [];
+    // Use first color image if available, else fallback to product Image
+    const firstImg = colors[0]?.ColorImg || this.product.Image || '';
+    this.selectedColor = colors[0]?.ColorName || null;
+
     const isSale = this.product.SuggestedRetailPrice > this.product.FinalPrice;
     const discountPct = isSale
       ? Math.round(((this.product.SuggestedRetailPrice - this.product.FinalPrice) / this.product.SuggestedRetailPrice) * 100)
       : 0;
 
-    // Color swatches
-    const colors = this.product.Colors || [];
+    // Build color swatches only if more than 1 color
     const colorSwatches = colors.length > 1
       ? `<div class="product-colors">
-           <p class="product-colors__label">Color:</p>
+           <p class="product-colors__label">Color: <span id="color-selected-name">${colors[0].ColorName}</span></p>
            <div class="product-colors__swatches">
              ${colors.map((c, i) => `
                <button
                  class="color-swatch${i === 0 ? ' active' : ''}"
+                 data-index="${i}"
                  data-color="${c.ColorName}"
+                 data-img="${c.ColorImg || ''}"
                  title="${c.ColorName}"
-                 style="background: ${c.ColorCode || '#ccc'}"
-               >${c.ColorName.charAt(0)}</button>
+               >
+                 <span class="color-swatch__dot"></span>
+                 <span class="color-swatch__label">${c.ColorName}</span>
+               </button>
              `).join('')}
            </div>
-           <p class="product-colors__selected">${colors[0].ColorName}</p>
          </div>`
-      : colors[0] ? `<p class="product__color">${colors[0].ColorName}</p>` : '';
+      : colors[0]
+        ? `<p class="product__color">Color: <strong>${colors[0].ColorName}</strong></p>`
+        : '';
 
     // Wishlist state
     const wishlist = getLocalStorage('so-wishlist') || [];
@@ -142,7 +146,7 @@ export default class ProductDetail {
       <div class="product-detail__grid">
         <div class="product-detail__image-wrap">
           ${isSale ? `<span class="product-card__discount product-card__discount--detail">-${discountPct}%</span>` : ''}
-          <img src="${imgSrc}" alt="${this.product.Name}" />
+          <img id="product-main-img" src="${firstImg}" alt="${this.product.Name}" />
         </div>
         <div class="product-detail__info">
           <p class="card__brand">${this.product.Brand.Name}</p>
@@ -155,8 +159,11 @@ export default class ProductDetail {
               : `<span style="font-size:1.4rem;font-weight:700;">$${this.product.FinalPrice}</span>`
             }
           </div>
+
           ${colorSwatches}
+
           <div class="product__description">${this.product.DescriptionHtmlSimple || ''}</div>
+
           <div class="product-detail__actions">
             <button id="addToCart" class="btn btn--primary product-detail__add-btn">Add to Cart</button>
             <button id="wishlistBtn" class="btn btn--secondary product-detail__wish-btn">
@@ -166,29 +173,40 @@ export default class ProductDetail {
         </div>
       </div>
 
-      <!-- COMMENTS SECTION -->
       <section class="comments-section">
         <h2 class="comments__title">Customer Comments</h2>
         <div class="comments__list"></div>
         <div class="comment-form">
           <h3 class="comment-form__title">Leave a Comment</h3>
           <input type="text" id="comment-author" class="comment-form__input" placeholder="Your name (optional)" />
-          <textarea id="comment-text" class="comment-form__textarea" placeholder="Share your experience with this product…" rows="3"></textarea>
+          <textarea id="comment-text" class="comment-form__textarea" placeholder="Share your experience…" rows="3"></textarea>
           <button id="submit-comment" class="btn btn--primary">Post Comment</button>
         </div>
       </section>
     `;
 
-    this.selectedColor = colors[0] ? colors[0].ColorName : null;
-
-    // Color swatch click
+    // ── Color swatch click → change image ──────────────────────────
     container.querySelectorAll('.color-swatch').forEach(btn => {
       btn.addEventListener('click', () => {
+        // Update active state
         container.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Update selected color name
         this.selectedColor = btn.dataset.color;
-        const label = container.querySelector('.product-colors__selected');
-        if (label) label.textContent = this.selectedColor;
+        const nameEl = document.getElementById('color-selected-name');
+        if (nameEl) nameEl.textContent = this.selectedColor;
+
+        // Change main product image
+        const newImg = btn.dataset.img;
+        const mainImg = document.getElementById('product-main-img');
+        if (mainImg && newImg) {
+          mainImg.style.opacity = '0';
+          setTimeout(() => {
+            mainImg.src = newImg;
+            mainImg.style.opacity = '1';
+          }, 180);
+        }
       });
     });
 
