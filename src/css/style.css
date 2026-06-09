@@ -410,9 +410,39 @@ header {
 ═══════════════════════════════════════════════════ */
 .product-detail { max-width: 1000px; margin: 2rem auto; padding: 1.5rem 2rem; }
 .product-detail__grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start;
-  background: var(--white); border-radius: var(--radius-lg);
-  box-shadow: var(--shadow); padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 2.5rem;
+  align-items: start;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+/* Image ALWAYS left */
+.product-detail__image-wrap {
+  grid-column: 1;
+  grid-row: 1;
+  position: relative;
+}
+/* Info ALWAYS right */
+.product-detail__info {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Color chip image in swatch button */
+.color-swatch__chip {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(0,0,0,0.15);
+  flex-shrink: 0;
 }
 .product-detail__image-wrap { position: relative; }
 .product-detail__image-wrap img { width: 100%; border-radius: var(--radius); }
