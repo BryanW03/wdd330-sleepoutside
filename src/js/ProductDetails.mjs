@@ -13,6 +13,7 @@ export default class ProductDetail {
     this.product = {};
     this.dataSource = dataSource;
     this.selectedColor = null;
+    this.colorImages = [];
   }
 
   async init() {
@@ -21,9 +22,35 @@ export default class ProductDetail {
       document.querySelector('.product-detail').innerHTML = '<p>Product not found.</p>';
       return;
     }
+    // Build color→image map from Colors array + ExtraImages
+    this._buildColorImages();
     this._updateBreadcrumb();
     this.renderProductDetails('.product-detail');
     updateCartBadge();
+  }
+
+  // Build array of { colorName, img } from product data
+  _buildColorImages() {
+    const p = this.product;
+    this.colorImages = [];
+
+    if (p.Colors && Array.isArray(p.Colors)) {
+      p.Colors.forEach((c, i) => {
+        // Use ColorImg if it exists, otherwise use ExtraImages[i] or main image
+        let img = c.ColorImg || '';
+        if (!img && p.Images) {
+          if (i === 0) {
+            img = p.Images.PrimaryLarge || p.Images.PrimaryMedium || '';
+          } else if (p.Images.ExtraImages && p.Images.ExtraImages[i - 1]) {
+            img = p.Images.ExtraImages[i - 1].Src || p.Images.PrimaryLarge || '';
+          } else {
+            img = p.Images.PrimaryLarge || '';
+          }
+        }
+        if (!img) img = getImageSrc(p);
+        this.colorImages.push({ colorName: c.ColorName, img });
+      });
+    }
   }
 
   _updateBreadcrumb() {
@@ -85,7 +112,11 @@ export default class ProductDetail {
 
   _saveComment(text, author) {
     const comments = this._loadComments();
-    comments.push({ text, author: author || 'Anonymous', date: new Date().toLocaleDateString() });
+    comments.push({
+      text,
+      author: author || 'Anonymous',
+      date: new Date().toLocaleDateString()
+    });
     setLocalStorage(`so-comments-${this.product.Id}`, comments);
   }
 
@@ -113,36 +144,46 @@ export default class ProductDetail {
     if (!container || !this.product) return;
 
     const colors = this.product.Colors || [];
-    const firstImg = colors[0]?.ColorImg || getImageSrc(this.product);
+
+    // First image = first colorImages entry or fallback
+    const firstImg = this.colorImages[0]?.img || getImageSrc(this.product);
     this.selectedColor = colors[0]?.ColorName || null;
 
     const isSale = this.product.SuggestedRetailPrice > this.product.FinalPrice;
     const discountPct = isSale
-      ? Math.round(((this.product.SuggestedRetailPrice - this.product.FinalPrice) / this.product.SuggestedRetailPrice) * 100)
+      ? Math.round(
+          ((this.product.SuggestedRetailPrice - this.product.FinalPrice) /
+            this.product.SuggestedRetailPrice) * 100
+        )
       : 0;
 
-    // Color swatches — only if more than 1 color
-    const colorSwatches = colors.length > 1
-      ? `<div class="product-colors">
-           <p class="product-colors__label">Color: <span id="color-selected-name">${colors[0].ColorName}</span></p>
-           <div class="product-colors__swatches">
-             ${colors.map((c, i) => `
-               <button
-                 class="color-swatch${i === 0 ? ' active' : ''}"
-                 data-index="${i}"
-                 data-color="${c.ColorName}"
-                 data-img="${c.ColorImg || getImageSrc(this.product)}"
-                 title="${c.ColorName}"
-               >
-                 <span class="color-swatch__dot"></span>
-                 <span class="color-swatch__label">${c.ColorName}</span>
-               </button>
-             `).join('')}
-           </div>
-         </div>`
-      : colors[0]
-        ? `<p class="product__color">Color: <strong>${colors[0].ColorName}</strong></p>`
-        : '';
+    // Color swatches — show only if more than 1 color
+    let colorSwatches = '';
+    if (colors.length > 1) {
+      const swatchButtons = this.colorImages.map((ci, i) => `
+        <button
+          class="color-swatch${i === 0 ? ' active' : ''}"
+          data-index="${i}"
+          data-color="${ci.colorName}"
+          data-img="${ci.img}"
+          title="${ci.colorName}"
+        >
+          <span class="color-swatch__dot"></span>
+          <span class="color-swatch__label">${ci.colorName}</span>
+        </button>
+      `).join('');
+
+      colorSwatches = `
+        <div class="product-colors">
+          <p class="product-colors__label">
+            Color: <span id="color-selected-name">${colors[0].ColorName}</span>
+          </p>
+          <div class="product-colors__swatches">${swatchButtons}</div>
+        </div>
+      `;
+    } else if (colors[0]) {
+      colorSwatches = `<p class="product__color">Color: <strong>${colors[0].ColorName}</strong></p>`;
+    }
 
     const wishlist = getLocalStorage('so-wishlist') || [];
     const inWishlist = wishlist.some(i => i.Id === this.product.Id);
@@ -150,9 +191,15 @@ export default class ProductDetail {
     container.innerHTML = `
       <div class="product-detail__grid">
         <div class="product-detail__image-wrap">
-          ${isSale ? `<span class="product-card__discount product-card__discount--detail">-${discountPct}%</span>` : ''}
-          <img id="product-main-img" src="${firstImg}" alt="${this.product.Name}"
-               onerror="this.src=''; this.alt='Image not available';" />
+          ${isSale
+            ? `<span class="product-card__discount product-card__discount--detail">-${discountPct}%</span>`
+            : ''}
+          <img
+            id="product-main-img"
+            src="${firstImg}"
+            alt="${this.product.Name}"
+            onerror="this.style.opacity='0.3'; this.alt='Image not available';"
+          />
         </div>
         <div class="product-detail__info">
           <p class="card__brand">${this.product.Brand.Name}</p>
@@ -168,7 +215,9 @@ export default class ProductDetail {
           ${colorSwatches}
           <div class="product__description">${this.product.DescriptionHtmlSimple || ''}</div>
           <div class="product-detail__actions">
-            <button id="addToCart" class="btn btn--primary product-detail__add-btn">Add to Cart</button>
+            <button id="addToCart" class="btn btn--primary product-detail__add-btn">
+              Add to Cart
+            </button>
             <button id="wishlistBtn" class="btn btn--secondary product-detail__wish-btn">
               ${inWishlist ? '♥ Saved!' : '♡ Save to Wishlist'}
             </button>
@@ -181,37 +230,58 @@ export default class ProductDetail {
         <div class="comments__list"></div>
         <div class="comment-form">
           <h3 class="comment-form__title">Leave a Comment</h3>
-          <input type="text" id="comment-author" class="comment-form__input" placeholder="Your name (optional)" />
-          <textarea id="comment-text" class="comment-form__textarea" placeholder="Share your experience…" rows="3"></textarea>
+          <input
+            type="text"
+            id="comment-author"
+            class="comment-form__input"
+            placeholder="Your name (optional)"
+          />
+          <textarea
+            id="comment-text"
+            class="comment-form__textarea"
+            placeholder="Share your experience…"
+            rows="3"
+          ></textarea>
           <button id="submit-comment" class="btn btn--primary">Post Comment</button>
         </div>
       </section>
     `;
 
-    // Color swatch → change image with fade
+    // ── Color swatch click → change image with fade ──
     container.querySelectorAll('.color-swatch').forEach(btn => {
       btn.addEventListener('click', () => {
+        // Update active swatch
         container.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+
+        // Update label
         this.selectedColor = btn.dataset.color;
         const nameEl = document.getElementById('color-selected-name');
         if (nameEl) nameEl.textContent = this.selectedColor;
-        const newImg = btn.dataset.img;
+
+        // Swap image with fade
+        const newImg  = btn.dataset.img;
         const mainImg = document.getElementById('product-main-img');
         if (mainImg && newImg) {
           mainImg.style.opacity = '0';
+          mainImg.style.transition = 'opacity 0.2s ease';
           setTimeout(() => {
             mainImg.src = newImg;
-            mainImg.style.opacity = '1';
-          }, 180);
+            mainImg.onload = () => { mainImg.style.opacity = '1'; };
+            // Fallback if onload doesn't fire
+            setTimeout(() => { mainImg.style.opacity = '1'; }, 300);
+          }, 200);
         }
       });
     });
 
-    document.getElementById('addToCart').addEventListener('click', this.addToCart.bind(this));
-    document.getElementById('wishlistBtn').addEventListener('click', this.toggleWishlist.bind(this));
+    document.getElementById('addToCart')
+      .addEventListener('click', this.addToCart.bind(this));
+    document.getElementById('wishlistBtn')
+      .addEventListener('click', this.toggleWishlist.bind(this));
 
     this._renderComments(container);
+
     document.getElementById('submit-comment').addEventListener('click', () => {
       const text   = document.getElementById('comment-text').value.trim();
       const author = document.getElementById('comment-author').value.trim();

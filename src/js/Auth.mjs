@@ -27,50 +27,73 @@ export default class Auth {
       body: JSON.stringify({ email, password })
     });
 
-    const data = await res.json().catch(() => ({}));
+    let data = {};
+    try { data = await res.json(); } catch(e) { /* empty */ }
+
+    console.log('Login response status:', res.status);
+    console.log('Login response data:', data);
 
     if (!res.ok) {
       throw new Error(
         data.message ||
         data.error   ||
-        'Incorrect email or password. Please try again.'
+        data.msg     ||
+        `Login failed (${res.status}). Check your credentials.`
       );
     }
 
-    const token = data.token || data.accessToken || data.access_token || '';
+    // Try all possible token field names
+    const token =
+      data.token        ||
+      data.accessToken  ||
+      data.access_token ||
+      data.jwt          ||
+      '';
+
+    if (!token) {
+      console.warn('No token found in response:', data);
+    }
+
     localStorage.setItem('so-token', token);
     localStorage.setItem('so-user', JSON.stringify({
       email,
-      name: data.name || data.firstName || email.split('@')[0]
+      name: data.name || data.firstName || data.username || email.split('@')[0]
     }));
     return data;
   }
 
   static async register(name, email, password) {
+    // Try with 'name' field first, then fallback to firstName/lastName
+    const body = { name, email, password };
+
     const res = await fetch(`${API_BASE}/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password })
+      body: JSON.stringify(body)
     });
 
-    const data = await res.json().catch(() => ({}));
+    let data = {};
+    try { data = await res.json(); } catch(e) { /* empty */ }
+
+    console.log('Register response status:', res.status);
+    console.log('Register response data:', data);
 
     if (!res.ok) {
-      // Common errors from this API
       if (res.status === 400) {
-        throw new Error(data.message || 'This email may already be registered. Try signing in instead.');
+        throw new Error(data.message || 'Invalid data. Check all fields.');
       }
-      if (res.status === 409) {
-        throw new Error('An account with this email already exists. Please sign in.');
+      if (res.status === 409 || (data.message && data.message.toLowerCase().includes('exist'))) {
+        throw new Error('Email already registered. Please sign in instead.');
       }
-      throw new Error(data.message || data.error || 'Registration failed. Please try again.');
+      throw new Error(data.message || data.error || `Registration failed (${res.status}).`);
     }
 
-    // Auto-login after successful register
+    // Auto-login after register
     try {
       await Auth.login(email, password);
-    } catch {
-      // If auto-login fails, store token from register response if available
+    } catch(e) {
+      console.warn('Auto-login after register failed:', e.message);
+      // Store whatever token came from register
       const token = data.token || data.accessToken || data.access_token || '';
       if (token) {
         localStorage.setItem('so-token', token);
@@ -79,5 +102,27 @@ export default class Auth {
     }
 
     return data;
+  }
+
+  // Use token to make authenticated requests
+  static async fetchWithToken(url, options = {}) {
+    const token = Auth.getToken();
+    if (!token) throw new Error('Not authenticated');
+
+    const res = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        ...(options.headers || {})
+      }
+    });
+
+    if (res.status === 401) {
+      Auth.logout();
+      throw new Error('Session expired. Please sign in again.');
+    }
+
+    return res;
   }
 }

@@ -48,16 +48,20 @@
         <form id="login-form" class="auth-form">
           <div class="form-group">
             <label for="login-email">Email</label>
-            <input type="email" id="login-email" class="form-input" placeholder="your@email.com" required />
+            <input type="email" id="login-email" class="form-input"
+              placeholder="your@email.com" required autocomplete="email" />
           </div>
           <div class="form-group">
             <label for="login-password">Password</label>
             <div class="input-password-wrap">
-              <input type="password" id="login-password" class="form-input" placeholder="••••••••" required />
+              <input type="password" id="login-password" class="form-input"
+                placeholder="••••••••" required autocomplete="current-password" />
               <button type="button" class="toggle-password" data-target="login-password">👁</button>
             </div>
           </div>
-          <button type="submit" class="btn btn--primary auth-submit" id="login-btn">Sign In</button>
+          <button type="submit" class="btn btn--primary auth-submit" id="login-btn">
+            Sign In
+          </button>
           <p class="auth-switch">
             Don't have an account?
             <button type="button" class="auth-link" id="go-register">Sign Up</button>
@@ -68,24 +72,31 @@
         <form id="register-form" class="auth-form" style="display:none;">
           <div class="form-group">
             <label for="reg-name">Full Name</label>
-            <input type="text" id="reg-name" class="form-input" placeholder="John Doe" required />
+            <input type="text" id="reg-name" class="form-input"
+              placeholder="John Doe" required autocomplete="name" />
           </div>
           <div class="form-group">
             <label for="reg-email">Email</label>
-            <input type="email" id="reg-email" class="form-input" placeholder="your@email.com" required />
+            <input type="email" id="reg-email" class="form-input"
+              placeholder="your@email.com" required autocomplete="email" />
           </div>
           <div class="form-group">
             <label for="reg-password">Password</label>
             <div class="input-password-wrap">
-              <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 characters" required minlength="6" />
+              <input type="password" id="reg-password" class="form-input"
+                placeholder="Min. 6 characters" required minlength="6"
+                autocomplete="new-password" />
               <button type="button" class="toggle-password" data-target="reg-password">👁</button>
             </div>
           </div>
           <div class="form-group">
             <label for="reg-confirm">Confirm Password</label>
-            <input type="password" id="reg-confirm" class="form-input" placeholder="Repeat password" required />
+            <input type="password" id="reg-confirm" class="form-input"
+              placeholder="Repeat password" required autocomplete="new-password" />
           </div>
-          <button type="submit" class="btn btn--primary auth-submit" id="register-btn">Create Account</button>
+          <button type="submit" class="btn btn--primary auth-submit" id="register-btn">
+            Create Account
+          </button>
           <p class="auth-switch">
             Already have an account?
             <button type="button" class="auth-link" id="go-login">Sign In</button>
@@ -96,39 +107,40 @@
 
     <footer class="site-footer">
       <div class="footer__inner">
-        <div class="footer__bottom" style="padding: 1.25rem 0;">
+        <div class="footer__bottom" style="padding:1.25rem 0;">
           <p>&copy; 2025 ⛺ SleepOutside</p>
         </div>
       </div>
     </footer>
 
     <script type="module">
-      import Auth from '/js/Auth.mjs';
       import { updateCartBadge } from '/js/utils.mjs';
 
       updateCartBadge();
 
-      if (Auth.isLoggedIn()) {
+      // Check if already logged in
+      const existingToken = localStorage.getItem('so-token');
+      if (existingToken) {
         window.location.href = '/index.html';
       }
 
-      const tabLogin     = document.getElementById('tab-login');
-      const tabRegister  = document.getElementById('tab-register');
-      const loginForm    = document.getElementById('login-form');
-      const registerForm = document.getElementById('register-form');
-      const msg          = document.getElementById('auth-msg');
+      const tabLogin      = document.getElementById('tab-login');
+      const tabRegister   = document.getElementById('tab-register');
+      const loginForm     = document.getElementById('login-form');
+      const registerForm  = document.getElementById('register-form');
+      const msgEl         = document.getElementById('auth-msg');
 
       function showMsg(text, type = 'error') {
-        msg.textContent = text;
-        msg.className = `auth-msg auth-msg--${type}`;
-        msg.style.display = 'block';
+        msgEl.textContent = text;
+        msgEl.className   = `auth-msg auth-msg--${type}`;
+        msgEl.style.display = 'block';
       }
-      function clearMsg() { msg.style.display = 'none'; }
+      function clearMsg() { msgEl.style.display = 'none'; }
 
       function switchToLogin() {
         tabLogin.classList.add('active');
         tabRegister.classList.remove('active');
-        loginForm.style.display = 'flex';
+        loginForm.style.display    = 'flex';
         registerForm.style.display = 'none';
         clearMsg();
       }
@@ -136,7 +148,7 @@
         tabRegister.classList.add('active');
         tabLogin.classList.remove('active');
         registerForm.style.display = 'flex';
-        loginForm.style.display = 'none';
+        loginForm.style.display    = 'none';
         clearMsg();
       }
 
@@ -149,57 +161,160 @@
       document.querySelectorAll('.toggle-password').forEach(btn => {
         btn.addEventListener('click', () => {
           const input = document.getElementById(btn.dataset.target);
-          input.type = input.type === 'password' ? 'text' : 'password';
+          if (input) {
+            input.type = input.type === 'password' ? 'text' : 'password';
+          }
         });
       });
 
-      // LOGIN
+      // ── LOGIN ────────────────────────────────────────────────────────
       loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearMsg();
-        const btn = document.getElementById('login-btn');
+        const btn      = document.getElementById('login-btn');
+        const email    = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
         btn.textContent = 'Signing in…';
-        btn.disabled = true;
+        btn.disabled    = true;
+
         try {
-          const email    = document.getElementById('login-email').value.trim();
-          const password = document.getElementById('login-password').value;
-          await Auth.login(email, password);
+          const res = await fetch('https://wdd330-backend.onrender.com/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          let data = {};
+          try { data = await res.json(); } catch(err) { /* ignore */ }
+
+          // Log in browser console for debugging
+          console.log('Login status:', res.status);
+          console.log('Login data:', JSON.stringify(data));
+
+          if (!res.ok) {
+            throw new Error(
+              data.message || data.error || data.msg ||
+              `Login failed (${res.status}). Check your credentials.`
+            );
+          }
+
+          // Find token in response
+          const token =
+            data.token        ||
+            data.accessToken  ||
+            data.access_token ||
+            data.jwt          ||
+            '';
+
+          console.log('Token found:', token ? 'YES' : 'NO');
+
+          if (!token) {
+            throw new Error('Server did not return a token. Contact support.');
+          }
+
+          localStorage.setItem('so-token', token);
+          localStorage.setItem('so-user', JSON.stringify({
+            email,
+            name: data.name || data.firstName || data.username || email.split('@')[0]
+          }));
+
           showMsg('✅ Signed in! Redirecting…', 'success');
           setTimeout(() => { window.location.href = '/index.html'; }, 1000);
-        } catch (err) {
-          showMsg(err.message || 'Login failed. Check your credentials.');
+
+        } catch(err) {
+          console.error('Login error:', err.message);
+          showMsg(err.message || 'Login failed.');
           btn.textContent = 'Sign In';
-          btn.disabled = false;
+          btn.disabled    = false;
         }
       });
 
-      // REGISTER
+      // ── REGISTER ─────────────────────────────────────────────────────
       registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         clearMsg();
+
         const password = document.getElementById('reg-password').value;
         const confirm  = document.getElementById('reg-confirm').value;
+
         if (password !== confirm) {
           showMsg('Passwords do not match.');
           return;
         }
-        const btn = document.getElementById('register-btn');
+
+        const btn   = document.getElementById('register-btn');
+        const name  = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+
         btn.textContent = 'Creating account…';
-        btn.disabled = true;
+        btn.disabled    = true;
+
         try {
-          const name  = document.getElementById('reg-name').value.trim();
-          const email = document.getElementById('reg-email').value.trim();
-          await Auth.register(name, email, password);
-          showMsg('🎉 Account created! Redirecting…', 'success');
-          setTimeout(() => { window.location.href = '/index.html'; }, 1000);
-        } catch (err) {
-          showMsg(err.message || 'Registration failed. Try a different email.');
+          const res = await fetch('https://wdd330-backend.onrender.com/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+          });
+
+          let data = {};
+          try { data = await res.json(); } catch(err) { /* ignore */ }
+
+          console.log('Register status:', res.status);
+          console.log('Register data:', JSON.stringify(data));
+
+          if (!res.ok) {
+            if (res.status === 409 ||
+                (data.message && data.message.toLowerCase().includes('exist'))) {
+              throw new Error('Email already registered. Please sign in.');
+            }
+            throw new Error(
+              data.message || data.error ||
+              `Registration failed (${res.status}).`
+            );
+          }
+
+          showMsg('🎉 Account created! Signing you in…', 'success');
+
+          // Auto-login
+          const loginRes = await fetch('https://wdd330-backend.onrender.com/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          let loginData = {};
+          try { loginData = await loginRes.json(); } catch(err) { /* ignore */ }
+
+          console.log('Auto-login status:', loginRes.status);
+          console.log('Auto-login data:', JSON.stringify(loginData));
+
+          const token =
+            loginData.token        ||
+            loginData.accessToken  ||
+            loginData.access_token ||
+            loginData.jwt          ||
+            data.token             ||
+            '';
+
+          if (token) {
+            localStorage.setItem('so-token', token);
+            localStorage.setItem('so-user', JSON.stringify({
+              email, name: loginData.name || name
+            }));
+          }
+
+          setTimeout(() => { window.location.href = '/index.html'; }, 1200);
+
+        } catch(err) {
+          console.error('Register error:', err.message);
+          showMsg(err.message || 'Registration failed.');
           btn.textContent = 'Create Account';
-          btn.disabled = false;
+          btn.disabled    = false;
         }
       });
 
-      // Check URL tab param
+      // Auto-switch to register tab if URL has ?tab=register
       if (new URLSearchParams(window.location.search).get('tab') === 'register') {
         switchToRegister();
       }
